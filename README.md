@@ -25,7 +25,7 @@ This repository uses cycleGAN for the augmentation of mammography data to DARK, 
 
 
 1. clone the repository 
-2. download `model.zip` from `https://faubox.rrze.uni-erlangen.de/getlink/fiRBM55TXSUgXzJgRftve6EV/`
+2. download `model.zip` from [here](https://faubox.rrze.uni-erlangen.de/getlink/fiRBM55TXSUgXzJgRftve6EV/), extract the file and put it in the models directory
 3. install `requirements.txt` either with `pip install -r requirements.txt` or simply use conda 
 4. choose a model out of the listed models with flag `-md`/`--model`:
     - `UNet_acyc_geo`
