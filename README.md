@@ -2,7 +2,7 @@
 
 ## CycleGAN for data augmentation - Introduction
 
-This repository uses cycleGAN for the augmentation of mammography data to DARK, NORMAL and BRIGHT domain samples.
+This repository uses cycleGAN for the augmentation of mammography samples. The GANs used for the augmentation were pretrained on an in-house dataset subdivided into three visually different domains.
 
 ## Usage
 
