@@ -14,15 +14,43 @@ for the augmentation of training data. An overview of the complete setup can be 
 
 ### Directory structure
 ```
-- Output
-	- BRIGHT_NORMAL
-	- NORMAL_BRIGHT
-	- NORMAL_DARK
-	- DARK_NORMAL
-- Input 		# copy input files here
-	- BRIGHT
-	- NORMAL
-	- DARK
+├── Input                 # put your input files here 
+│   ├── BRIGHT
+│   │   ├── file_bright01.png
+│   │   ├── file_bright02.png
+│   │   └── ...
+│   ├── DARK
+│   │   ├── file_dark01.png
+│   │   ├── file_dark02.png
+│   │   └── ...
+│   └── NORMAL
+│       ├── file_normal01.png
+│       ├── file_normal02.png
+│       └── ...
+├── models
+│   ├── UNet_acyc_geo/
+│   ├── UNet_acyc_perc/
+│   ├── UNet_adversarial/
+│   ├── UNet_cyc_geo/
+│   └── UNet_cyc_perc/
+└── Output
+    ├── BRIGHT_NORMAL
+    │   ├── file_bright01.png
+    │   ├── file_bright02.png
+    │   └── ...
+    ├── DARK_NORMAL
+    │   ├── file_dark01.png
+    │   ├── file_dark02.png
+    │   └── ...
+    ├── NORMAL_BRIGHT
+    │   ├── file_normal01.png
+    │   ├── file_normal02.png
+    │   └── ...
+    └── NORMAL_DARK
+        ├── file_normal01.png
+        ├── file_normal02.png
+        └── ...
+
 ```
 
 ### General
@@ -40,7 +68,7 @@ for the augmentation of training data. An overview of the complete setup can be 
     - `UNet_cyc_geoqq:`
     - `UNet_cyc_perc`
 
-5. put your input files in the respective `BRIGHT`,`NORMAL` and `DARK` folders in the `Input`
+5. put your input files in the respective `BRIGHT`,`NORMAL` and `DARK` folders in  `Input`, files have to be either JPEG or PNG format
 6. generate images using `python3 generate.py -md UNet_acyc_geo`, generated images are saved into the respective subdirectory `Output/BRIGHT_NORMAL`, `Output/NORMAL_BRIGHT`, `Output/DARK_NORMAL` and `Output/NORMAL_DARK`
 
 ## Flags
