@@ -1,7 +1,8 @@
 # CycleAugmetGAN
 
 ## CycleGAN for data augmentation - Introduction
-This repository uses cycleGAN for the augmentation of mammography samples. The GANs used for the augmentation were pretrained on an in-house dataset (*UKE dataset*) subdivided into three visually different domains. The pretrained generators can be downloaded ![here](https://faubox.rrze.uni-erlangen.de/getlink/fiRBM55TXSUgXzJgRftve6EV/) and the model architectures are stored in `generator_model.py`. The idea is to use the cycleGAN generators for the augmentation of training data. An overview of the complete setup can be seen here:
+This repository uses cycleGAN for the augmentation of mammography samples. The GANs used for the augmentation were pretrained on an in-house dataset (*UKE dataset*) subdivided into three visually different domains. The pretrained generators can be downloaded ![here](https://faubox.rrze.uni-erlangen.de/getlink/fiRBM55TXSUgXzJgRftve6EV/) and the model architectures are stored in `generator_model.py` or simply follow the steps in Usage section. The idea is to use the cycleGAN generators 
+for the augmentation of training data. An overview of the complete setup can be seen here:
 
 ![Idea](https://github.com/AmirMaEl/CycleAugmentGAN/blob/main/overview.png)
  1. use a cycleGAN to train the translation between `BRIGHT`, `NORMAL` and `DARK` subdomains of the *UKE datasaet*. The cycleGAN model architectures were modified with various cyclic (black loss) and acyclic (orange loss) loss functions.
@@ -48,3 +49,5 @@ This repository uses cycleGAN for the augmentation of mammography samples. The G
 - `-d`/`--delete_input`: delete all previous input files in `BRIGHT`, `NORMAL` and `DARK`; Default is `False`
 - `-s`/`--size`: set the generated image size; Default is `512`
  
+## TODOS
+- upload cycleGAN training code
