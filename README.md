@@ -1,8 +1,8 @@
 # CycleAugmetGAN
 
 ## CycleGAN for data augmentation - Introduction
+This repository uses cycleGAN for the augmentation of mammography samples. The GANs used for the augmentation were pretrained on an in-house dataset subdivided into three visually different domains. The following figure gives an impression of the domains: 
 
-This repository uses cycleGAN for the augmentation of mammography samples. The GANs used for the augmentation were pretrained on an in-house dataset subdivided into three visually different domains.
 
 ## Usage
 
@@ -31,7 +31,7 @@ This repository uses cycleGAN for the augmentation of mammography samples. The G
     - `UNet_acyc_geo`
     - `UNet_acyc_perc`
     - `UNet_adversarial` - default model 
-    - `UNet_cyc_geoo`
+    - `UNet_cyc_geoqq:`
     - `UNet_cyc_perc`
 
 5. put your input files in the respective `BRIGHT`,`NORMAL` and `DARK` folders in the `Input`
