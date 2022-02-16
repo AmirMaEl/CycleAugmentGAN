@@ -5,7 +5,7 @@ This repository uses cycleGAN for the augmentation of mammography samples. The G
 
 ![Idea](https://github.com/AmirMaEl/CycleAugmentGAN/blob/main/overview.png)
  1. use a cycleGAN to train the translation between `BRIGHT`, `NORMAL` and `DARK` subdomains of the *UKE datasaet*. The cycleGAN model architectures were modified with various cyclic (black loss) and acyclic (orange loss) loss functions.
-2. cycleGAN generators can now be extracted and reused for the augmentation of training data, thereby improving robustness and generalizability of the input data (e.g. a *YOLO* breast lesion detector)
+2. cycleGAN generators can now be extracted and reused for the augmentation of training data, thereby improving robustness and generalizability of a model trained on the input data (e.g. a *YOLO* breast lesion detector)
 
 
 
