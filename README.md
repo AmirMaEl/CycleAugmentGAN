@@ -2,7 +2,8 @@
 
 ## CycleGAN for data augmentation - Introduction
 This repository uses cycleGAN for the augmentation of mammography samples. The GANs used for the augmentation were pretrained on an in-house dataset subdivided into three visually different domains. The idea is to use the cycleGAN generators for the augmentation of training data, as shown in this figure:
-
+[1]
+[2]
 
 
 
