@@ -27,7 +27,7 @@ for the augmentation of training data. An overview of the complete setup can be 
 │       ├── file_normal01.png
 │       ├── file_normal02.png
 │       └── ...
-├── models
+├── pretrained_models
 │   ├── UNet_acyc_geo/
 │   ├── UNet_acyc_perc/
 │   ├── UNet_adversarial/

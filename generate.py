@@ -25,7 +25,7 @@ directory file structure:
         -DARK
 '''
 
-model_path = 'models'
+model_path = 'pretrained_models'
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-md', '--model', type=str, help='which generator model to use', default='UNet_adversarial')
