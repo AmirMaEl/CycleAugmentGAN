@@ -79,3 +79,27 @@ for the augmentation of training data. An overview of the complete setup can be 
  
 ## TODOS
 - upload cycleGAN training code
+
+## References 
+If you use any of this code for your research, please cite this [paper](https://link.springer.com/chapter/10.1007/978-3-658-36932-3_66).
+```
+@InProceedings{CycleAugmentGAN2022,
+author="El-Ghoussani, Amir
+and Rodr{\'i}guez-Salas, Dalia
+and Seuret, Mathias
+and Maier, Andreas",
+editor="Maier-Hein, Klaus
+and Deserno, Thomas M.
+and Handels, Heinz
+and Maier, Andreas
+and Palm, Christoph
+and Tolxdorff, Thomas",
+title="GAN-based Augmentation of Mammograms to Improve Breast Lesion Detection",
+booktitle="Bildverarbeitung f{\"u}r die Medizin 2022",
+year="2022",
+publisher="Springer Fachmedien Wiesbaden",
+address="Wiesbaden",
+pages="321--326",
+isbn="978-3-658-36932-3"
+}
+```
