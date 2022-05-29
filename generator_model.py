@@ -36,43 +36,39 @@ class ResBlock(nn.Module):
 
 class ResidualGenerator(nn.Module):
 
-    def __init__(self, in_channels: int = 3, out_channels: int = 3, apply_dp: bool = True):
+    def __init__(self, in_channels: int = 3, out_channels: int = 3, apply_dp: bool = True, nb_downsampling=9, nb_resblks=2,scale_channels=2):
         '''
-                                Generator Architecture (Image Size: 256)
-        c7s1-64, d128, d256, R256, R256, R256, R256, R256, R256, R256, R256, R256, u128, u64, c7s1-3,
-        where c7s1-k denote a 7 × 7 Conv-InstanceNorm-ReLU layer with k filters and stride 1, dk denotes a 3 × 3
-        Conv-InstanceNorm-ReLU layer with k filters and stride 2, Rk denotes a residual block that contains two
-        3 × 3 Conv layers with the same number of filters on both layer. uk denotes a 3 × 3 DeConv-InstanceNorm-
-        ReLU layer with k filters and stride 1.
-
+        Residual generator architecture consisting downsampling blocks (nb_downsampling), residual blocks (nb_reblks) and upsampling blocks.
+        Downsampling blocks consist of Conv-InstanceNorm-ReLU with a kernel size of 3. The # of channels can be scaled in each down/up sampling stage with scale_channels.
+        Upsampling blocks consist of TransposeConv-InstanceNorm-ReLU.
         Args:
-            in_channels:  Number of input channels
-            out_channels: Number of output channels
-            apply_dp:     If apply_dp is set to True, then activations are 0'ed out with prob 0.5
+            in_channels: number of input chamnels, for RGB 3
+            out_channels: number of output channels, should be similar to in_channels
+            apply_dp: apply dropout in the residual blocks
+            nb_downsampling: number of downsampling stages
+            nb_resblks: number of residual  blocks in the bottleneck
+            scale_channels: Integer scaling factor to change the amount of channels within each up/downsampling stage
         '''
 
         super().__init__()
 
         f = 1
-        nb_downsampling = 2
-        nb_resblks = 9
-
         conv = nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=7, stride=1)
         self.layers = [nn.ReflectionPad2d(3), conv, nn.InstanceNorm2d(out_channels), nn.ReLU(True)]
 
         for i in range(nb_downsampling):
-            conv = nn.Conv2d(out_channels * f, out_channels * 2 * f, kernel_size=3, stride=2, padding=1)
-            self.layers += [conv, nn.InstanceNorm2d(out_channels * 2 * f), nn.ReLU(True)]
-            f *= 2
+            conv = nn.Conv2d(out_channels * f, out_channels * scale_channels * f, kernel_size=3, stride=2, padding=1)
+            self.layers += [conv, nn.InstanceNorm2d(out_channels * scale_channels * f), nn.ReLU(True)]
+            f *= scale_channels
 
         for i in range(nb_resblks):
             res_blk = ResBlock(in_channels=out_channels * f, apply_dp=apply_dp)
             self.layers += [res_blk]
 
         for i in range(nb_downsampling):
-            conv = nn.ConvTranspose2d(out_channels * f, out_channels * (f // 2), 3, 2, padding=1, output_padding=1)
-            self.layers += [conv, nn.InstanceNorm2d(out_channels * (f // 2)), nn.ReLU(True)]
-            f = f // 2
+            conv = nn.ConvTranspose2d(out_channels * f, out_channels * (f // scale_channels), 3, 2, padding=1, output_padding=1)
+            self.layers += [conv, nn.InstanceNorm2d(out_channels * (f // scale_channels)), nn.ReLU(True)]
+            f = f // scale_channels
 
         conv = nn.Conv2d(in_channels=out_channels, out_channels=in_channels, kernel_size=7, stride=1)
         self.layers += [nn.ReflectionPad2d(3), conv, nn.Tanh()]
@@ -154,7 +150,7 @@ class UNetGenerator(nn.Module):
                  num_downs=9,
                  ngf=64,
                  norm_layer=nn.BatchNorm2d,
-                 use_dropout=False
+                 apply_dp=False
                  ):
         '''
         Construct a Unet generator
@@ -183,7 +179,7 @@ class UNetGenerator(nn.Module):
                                                  input_nc=None,
                                                  submodule=unet_block,
                                                  norm_layer=norm_layer,
-                                                 use_dropout=use_dropout
+                                                 use_dropout=apply_dp
                                                  )
         # gradually reduce the number of filters from ngf * 8 to ngf
         unet_block = UnetSkipConnectionBlock(ngf * 4,
@@ -285,8 +281,52 @@ class UnetSkipConnectionBlock(nn.Module):
         else:  # add skip connections
             return torch.cat([x, self.model(x)], 1)
 
+class PatchDiscriminator(nn.Module):
+
+    def __init__(self, in_channels = 3, out_channels= 64, nb_layers = 3):
+
+        """
+                                    Discriminator Architecture!
+        C64 - C128 - C256 - C512, where Ck denote a Convolution-InstanceNorm-LeakyReLU layer with k filters
+        """
+
+        """
+        Parameters:
+            in_channels:    Number of input channels
+            out_channels:   Number of output channels
+            nb_layers:      Number of layers in the 70*70 Patch Discriminator
+        """
+
+
+        super().__init__()
+        in_f  = 1
+        out_f = 2
+
+        conv = nn.Conv2d(in_channels, out_channels, kernel_size = 4, stride = 2, padding = 1)
+        self.layers = [conv, nn.LeakyReLU(0.2, True)]
+
+        for idx in range(1, nb_layers):
+            conv = nn.Conv2d(out_channels * in_f, out_channels * out_f, kernel_size = 4, stride = 2, padding = 1)
+            self.layers += [conv, nn.InstanceNorm2d(out_channels * out_f), nn.LeakyReLU(0.2, True)]
+            in_f   = out_f
+            out_f *= 2
+
+        out_f = min(2 ** nb_layers, 8)
+        conv = nn.Conv2d(out_channels * in_f,  out_channels * out_f, kernel_size = 4, stride = 1, padding = 1)
+        self.layers += [conv, nn.InstanceNorm2d(out_channels * out_f), nn.LeakyReLU(0.2, True)]
+
+        conv = nn.Conv2d(out_channels * out_f, out_channels = 1, kernel_size = 4, stride = 1, padding = 1)
+        self.layers += [conv]
+
+        self.net = nn.Sequential(*self.layers)
+
+
+    def forward(self, x): return self.net(x)
+
+
+
 
 if __name__ == '__main__':
-    rand = torch.rand((5, 3, 512, 512))
-    model = UNetGenerator(3, 3).to('cuda:0')
-    summary(model, (3, 512, 512))
+    rand = torch.rand((5, 3, 512, 512),device='cpu')
+    model = UNetGenerator(3, 3).to('cpu')
+    summary(model, (3, 512, 512),device='cpu')

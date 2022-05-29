@@ -12,18 +12,6 @@ from PIL import Image
 import glob
 import torch.nn as nn
 
-'''
-directory file structure:
-    -Output    #output directories 
-        -BRIGHT_NORMAL
-        -NORMAL_BRIGHT
-        -DARK_NORMAL
-        _NORMAL_DARK
-    -Input     #input directories
-        -BRIGHT
-        -NORMAL
-        -DARK
-'''
 
 model_path = 'pretrained_models'
 
@@ -43,6 +31,13 @@ def list_generators():
 
 
 def path_to_torch_img(file):
+    """
+    Takes a file path, reads the image, resizes it to the size specified in the opt.size object, converts it to a tensor, and
+    adds a dimension to the tensor
+
+    :param file: the path to the image file
+    :return: A tensor of size (1, 3, opt.size, opt.size)
+    """
     tmp_img = cv2.imread(file)
     tmp_img = cv2.resize(tmp_img, (opt.size, opt.size))
     tr = transforms.ToTensor()
@@ -52,6 +47,13 @@ def path_to_torch_img(file):
 
 
 def dir_to_model(domA, domB):
+    """
+    Loads the model from the path specified in the opt.model variable, and returns the model.
+
+    :param domA: the name of the source domain
+    :param domB: the domain we want to transfer to
+    :return: modelab and modelba
+    """
     if 'UNet' in opt.model:
         modelab = UNetGenerator(3, 3, 9, 64, nn.BatchNorm2d, False)
         modelba = UNetGenerator(3, 3, 9, 64, nn.BatchNorm2d, False)
@@ -69,6 +71,13 @@ def dir_to_model(domA, domB):
 
 
 def save(img, save_path, name):
+    """
+    Saves as an image as png file.
+
+    :param img: the image tensor
+    :param save_path: the path to save the generated image
+    :param name: the name of the image file
+    """
     grid = make_grid(img, nrow=8, padding=2, pad_value=0, normalize=False, scale_each=False)
     ndarr = grid.mul(255).add_(0.5).clamp_(0, 255).permute(1, 2, 0).to('cpu', torch.uint8).numpy()
     im = Image.fromarray(ndarr)
@@ -77,6 +86,9 @@ def save(img, save_path, name):
 
 
 def check_generate_dirs():
+    """
+    Checks if directories exist, and if they don't, creates them. If they do exist, deletes the files in them.
+    """
     if not os.path.isdir('Output'):
         os.mkdir('Output')
         os.mkdir(os.path.join('Output', 'BRIGHT_NORMAL'))
@@ -103,6 +115,9 @@ def check_generate_dirs():
 
 
 def generate_and_save():
+    """
+    It takes all the images in the Input folders, and generates transformed images in the Output folders for all domains ('BRIGHT_NORMAL','NORMAL_BRIGHT','DARK_NORMAL','NORMAL_DARK').
+    """
     check_generate_dirs()
     BRIGHT_in = glob.glob(os.path.join('Input', 'BRIGHT', '*'))
     NORMAL_in = glob.glob(os.path.join('Input', 'NORMAL', '*'))
